@@ -358,6 +358,7 @@ namespace FMLeadRouter
 
         private static void CallRouteProcessAdf2(MailMessage mailMessage, string createRoute = null)
         {
+            //This is the main body of code to determine the route...
             Console.WriteLine("Email From: {0}", mailMessage.From.Address);
             MailMessage orgMailMessage = mailMessage;
 

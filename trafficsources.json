@@ -1,0 +1,14 @@
+﻿{
+	"sources": [
+	  {"key": "facebook", "value": "facebook"},
+	  {"key": "google", "value": "google"},
+	  {"key": "bing", "value": "bing"},
+	  {"key": "yahoo", "value": "yahoo"},
+	  {"key": "duck", "value": "duckduckgo"},
+	  {"key": "criteo", "value": "criteo"},
+	  {"key": "cars", "value": "cars.com"},
+	  {"key": "edmunds", "value": "edmunds"},
+	  {"key": "vin", "value": "vin"},
+	  {"key": "autotrader", "value": "autotrader"}
+	  ]
+}

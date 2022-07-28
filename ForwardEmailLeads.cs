@@ -418,6 +418,13 @@ namespace FMLeadRouter
                 status = "";
             }
 
+            var interest = GetInterest(mailMessage.Body, "/adf/prospect/vehicle/@interest");
+            //check for used
+            if (String.IsNullOrEmpty(interest))
+            {
+                interest = "";
+            }
+
             //Spam Filter
             bool isSpam = false;
             if (vendor.Id == 24)
@@ -502,8 +509,9 @@ namespace FMLeadRouter
 
             var bDontForwardLead = false;
 
-            //DO THIS IF IT IS DEALER.COM ONLY -- FOR NOW
-            if (vendor.Id == 34)
+
+                //DO THIS IF IT IS DEALER.COM ONLY -- FOR NOW
+                if (vendor.Id == 34)
             {
                 var proService = GetProviderService(mailMessage.Body, "/adf/prospect/provider/service");
                 if (!String.IsNullOrEmpty(proService))
@@ -672,9 +680,9 @@ namespace FMLeadRouter
 
                 if (!String.IsNullOrEmpty(stockNumber))
                 {
-                //Inventory Lookup 
+                    //Inventory Lookup 
 
-                if (car != null && car.Loc != null)
+                    if (car != null && car.Loc != null)
                 {
                     leadRoute = _routeEmail.GetLeadRouteStk(vendor.Id, vendorCode, car.Loc, car.Mall);
                     foreach (var rt in leadRoute)
@@ -753,6 +761,19 @@ namespace FMLeadRouter
                 }
                 else
                 {
+
+                        //DO THIS IF IT IS KBB ONLY (70) KBB ICO
+                        // "All KBB leads with no vehicle listed (to purchase) and trade-in info only should be directed to the Toyota store"
+
+                    if (vendor.Id == 1080)
+                    {
+                        if (interest == "trade-in")
+                            {
+                                route.Loc = "LFT";
+                                route.Mall = "GA";
+                            }
+                    }
+
                     RouteEmail(mailMessage, route);
 
                     if (make.ToLower() == "hyundai" && status.ToLower() != "used")
@@ -1154,6 +1175,19 @@ namespace FMLeadRouter
             if (!String.IsNullOrEmpty(node))
             {
                 Console.WriteLine("Found Provider Service: {0}", node);
+            }
+            return node;
+        }
+
+        private static string GetInterest(string body, string xpath)
+        {
+            Console.WriteLine("Getting interest (trade-in?)...");
+            string node = string.Empty;
+            //find stock
+            node = _adf.ReadXmlNode(body, xpath);
+            if (!String.IsNullOrEmpty(node))
+            {
+                Console.WriteLine("Found interest (trade-in?): {0}", node);
             }
             return node;
         }

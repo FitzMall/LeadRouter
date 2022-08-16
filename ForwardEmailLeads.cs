@@ -406,11 +406,12 @@ namespace FMLeadRouter
 
             var make = GetMake(mailMessage.Body, "/adf/prospect/vehicle/make");
             //check for used
-            if (String.IsNullOrEmpty(make))
-            {
-                make = GetMake(mailMessage.Body, "/adf/prospect/vehicle/@status");
-            }
 
+                if (String.IsNullOrEmpty(make))
+                {
+                    make = GetMake(mailMessage.Body, "/adf/prospect/vehicle/@status");
+                }
+      
             var status = GetMake(mailMessage.Body, "/adf/prospect/vehicle/@status");
             //check for used
             if (String.IsNullOrEmpty(status))
@@ -607,13 +608,29 @@ namespace FMLeadRouter
             //Lead Route to Forward Email
             var leadRoute = new List<LeadRoute>();
 
+
+            if (vendor.Id == 1076)
+            {
+                MailMessage daveResponderMessage = new MailMessage();
+                daveResponderMessage.Subject = "hisp stock " + vehicleStockNumberForLookup;
+                daveResponderMessage.Body = "stock " + stockNumber;
+                daveResponderMessage.Body += "make " + make;
+                RouteEmail(daveResponderMessage, "burroughsd@fitzmall.com");
+
+                vehicleStockNumberForLookup = make; // make is stock # for 1076 Hispanic Media
+                stockNumber = make;
+            }
+
             //Lookup Vehicle
             CarDetails car = new CarDetails();
             if (!String.IsNullOrEmpty(vehicleStockNumberForLookup))
             {
                 car = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
+
+
             }
 
+   
             // CHECK TO SEE IF E-PRICER, IF SO, SEND ADDITIONAL EMAIL TO CUSTOMER...
             if (bEPricerLead)
             {
@@ -771,6 +788,7 @@ namespace FMLeadRouter
                             {
                                 route.Loc = "LFT";
                                 route.Mall = "GA";
+                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                             }
                     }
 

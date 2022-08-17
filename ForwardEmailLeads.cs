@@ -611,12 +611,6 @@ namespace FMLeadRouter
 
             if (vendor.Id == 1076)
             {
-                MailMessage daveResponderMessage = new MailMessage();
-                daveResponderMessage.Subject = "hisp stock " + vehicleStockNumberForLookup;
-                daveResponderMessage.Body = "stock " + stockNumber;
-                daveResponderMessage.Body += "make " + make;
-                RouteEmail(daveResponderMessage, "burroughsd@fitzmall.com");
-
                 vehicleStockNumberForLookup = make; // make is stock # for 1076 Hispanic Media
                 stockNumber = make;
             }

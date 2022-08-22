@@ -609,10 +609,17 @@ namespace FMLeadRouter
             var leadRoute = new List<LeadRoute>();
 
 
-            if (vendor.Id == 1076)
+            if (vendor.Id == 1076) // all hispanic leads go to FBN only after 8/18/22 re Harold Redden/Eyal Toueg
             {
-                vehicleStockNumberForLookup = make; // make is stock # for 1076 Hispanic Media
-                stockNumber = make;
+                MailMessage daveResponderMessage = new MailMessage();
+                daveResponderMessage.Subject = "hisp route " + make;
+                daveResponderMessage.Body = "stock " + stockNumber;
+                daveResponderMessage.Body += "make " + make;
+                RouteEmail(daveResponderMessage, "burroughsd@fitzmall.com");
+
+                vehicleStockNumberForLookup = ""; // make is stock # for 1076 Hispanic Media
+                stockNumber = ""; 
+
             }
 
             //Lookup Vehicle
@@ -691,11 +698,12 @@ namespace FMLeadRouter
 
                 if (!String.IsNullOrEmpty(stockNumber))
                 {
-                    //Inventory Lookup 
-
-                    if (car != null && car.Loc != null)
+   
+                if (car != null && car.Loc != null)
                 {
                     leadRoute = _routeEmail.GetLeadRouteStk(vendor.Id, vendorCode, car.Loc, car.Mall);
+
+
                     foreach (var rt in leadRoute)
                     {
                         bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);
@@ -716,6 +724,8 @@ namespace FMLeadRouter
                 {
                     if (!String.IsNullOrEmpty(vendorCode) && !String.IsNullOrEmpty(make))
                     {
+
+
                         leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode, make.ToLower());
                         foreach (var rt in leadRoute)
                         {
@@ -727,6 +737,7 @@ namespace FMLeadRouter
                     }
                     if (!String.IsNullOrEmpty(vendorCode) && String.IsNullOrEmpty(make))
                     {
+
                         leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode);
                         foreach (var rt in leadRoute)
                         {
@@ -741,6 +752,7 @@ namespace FMLeadRouter
             else
             {
                 leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode, make);
+
                 foreach (var rt in leadRoute)
                 {
                     bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);

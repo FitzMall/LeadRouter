@@ -627,11 +627,8 @@ namespace FMLeadRouter
             if (!String.IsNullOrEmpty(vehicleStockNumberForLookup))
             {
                 car = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
-
-
             }
 
-   
             // CHECK TO SEE IF E-PRICER, IF SO, SEND ADDITIONAL EMAIL TO CUSTOMER...
             if (bEPricerLead)
             {
@@ -795,6 +792,24 @@ namespace FMLeadRouter
                                 route.Loc = "LFT";
                                 route.Mall = "GA";
                                 route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                            }
+                    }
+
+                    if (vendor.Id == 2)  // AUTOTRADER LFT leads to LFM if cars are there
+                    {
+                        if (route.Loc == "LFT" && route.Mall == "GA")
+                        {
+                                CarDetails car2 = new CarDetails();
+
+                                vehicleStockNumberForLookup = stockNumber; // find the location of car
+                            car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
+                            
+                            if (car2.Loc == "LFM")  // CAR AT LFM? ROUTE THE LEAD THERE
+                                {
+                                    route.Loc = "LFM";
+                                    route.Mall = "GM";
+                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                }
                             }
                     }
 

@@ -611,12 +611,7 @@ namespace FMLeadRouter
 
             if (vendor.Id == 1076) // all hispanic leads go to FBN only after 8/18/22 re Harold Redden/Eyal Toueg
             {
-                MailMessage daveResponderMessage = new MailMessage();
-                daveResponderMessage.Subject = "hisp route " + make;
-                daveResponderMessage.Body = "stock " + stockNumber;
-                daveResponderMessage.Body += "make " + make;
-                RouteEmail(daveResponderMessage, "burroughsd@fitzmall.com");
-
+      
                 vehicleStockNumberForLookup = ""; // make is stock # for 1076 Hispanic Media
                 stockNumber = ""; 
 
@@ -795,10 +790,20 @@ namespace FMLeadRouter
                             }
                     }
 
-                    if (vendor.Id == 2)  // AUTOTRADER LFT leads to LFM if cars are there
-                    {
-                        if (route.Loc == "LFT" && route.Mall == "GA")
+                    if (vendor.Id == 2) // AUTOTRADER 
                         {
+                            if (car.Loc == "" | car.Loc != null)  // car not in inventory
+                            {
+                                string VendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
+                                if (VendorName == " Fitzgerald Auto Mall Lexington Park")
+                                {
+                                    route.Loc = "FLP";
+                                    route.Mall = "LP";
+                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                }
+                            }
+                            if (route.Loc == "LFT" && route.Mall == "GA") // AUTOTRADER LFT leads to LFM if cars are there
+                            {
                                 CarDetails car2 = new CarDetails();
 
                                 vehicleStockNumberForLookup = stockNumber; // find the location of car

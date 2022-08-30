@@ -46,6 +46,16 @@ namespace FMLeadRouter
         public DateTime CreateDate { get; set; }
     }
 
+    public class LocationByDealerName
+    {
+        public int ID { get; set; }
+        public string FullName { get; set; }
+        public string LocCode { get; set; }
+        public string Mall { get; set; }
+        public int State { get; set; }
+
+    }
+
     public class LeadRoute
     {
         public int Id { get; set; }
@@ -795,10 +805,11 @@ namespace FMLeadRouter
                             if (car.Loc == "" | car.Loc != null)  // car not in inventory
                             {
                                 string VendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
-                                if (VendorName == " Fitzgerald Auto Mall Lexington Park")
+                                string possibleLoc = _routeEmail.GetLeadRouteLocByDealerName(VendorName);
+
+                                if (possibleLoc != "" | possibleLoc != null)
                                 {
-                                    route.Loc = "FLP";
-                                    route.Mall = "LP";
+                                    route.Loc = possibleLoc;
                                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                                 }
                             }

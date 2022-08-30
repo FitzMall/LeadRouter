@@ -162,6 +162,34 @@ namespace FMLeadRouter
             return vendor;
         }
 
+        public string GetLeadRouteLocByDealerName(string dealerName)
+        {
+            var locByDealerName = "";
+
+            string sql = @"SELECT [ID],[FullName],[LocCode],[Mall],[State]  FROM [Checklists].[dbo].[Locations_lkup] WHERE FullName = @dealerName";
+            var vendorloc = SqlMapperUtil.SqlWithParams<LocationByDealerName>(sql, new { dealerName });
+            var locRecord = vendorloc[0];
+
+            if (locRecord != null && (locRecord.LocCode != null || locRecord.LocCode != ""))
+            {
+                locByDealerName = locRecord.LocCode;
+            }
+            else
+            {
+                try
+                {
+                    locRecord = vendorloc[0];
+                    locByDealerName = locRecord.LocCode;
+                }
+                catch (Exception ex)
+                {
+                    locByDealerName = "";
+                }
+
+            }
+            return locByDealerName;
+        }
+
         public List<LeadRoute> GetLeadRouteStk(int id, string vendorCode, string locCode, string mall)
         {
             Console.WriteLine("Get Lead With Stk");

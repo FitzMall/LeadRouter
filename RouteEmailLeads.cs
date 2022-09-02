@@ -111,6 +111,27 @@ namespace FMLeadRouter
             return result;
         }
 
+
+        public string GetLeadRouteLocByDealerName(string dealerName, string presentLoc)
+        {
+            string possibleLoc = presentLoc;
+            string sql = @"SELECT LocCode, Mall FROM [Checklists].[dbo].[Locations_lkup] WHERE [FullName] = @dealerName";
+            var ResultDealershipSearch = SqlMapperUtil.SqlWithParams<DealershipSearchResult>(sql, new { dealerName }).FirstOrDefault();
+
+            try
+            {
+                possibleLoc = ResultDealershipSearch.LocCode;
+            }
+            catch (Exception ex)
+            { 
+
+            }
+
+
+            return possibleLoc;
+        }
+
+
         public LeadVendor GetLeadVendorByEmail(string email)
         {
             if (email.Contains("@anon.cargurus.com"))
@@ -162,34 +183,7 @@ namespace FMLeadRouter
             return vendor;
         }
 
-        public string GetLeadRouteLocByDealerName(string dealerName)
-        {
-            var locByDealerName = "";
-
-            string sql = @"SELECT [ID],[FullName],[LocCode],[Mall],[State]  FROM [Checklists].[dbo].[Locations_lkup] WHERE FullName = @dealerName";
-            var vendorloc = SqlMapperUtil.SqlWithParams<LocationByDealerName>(sql, new { dealerName });
-            var locRecord = vendorloc[0];
-
-            if (locRecord != null && (locRecord.LocCode != null || locRecord.LocCode != ""))
-            {
-                locByDealerName = locRecord.LocCode;
-            }
-            else
-            {
-                try
-                {
-                    locRecord = vendorloc[0];
-                    locByDealerName = locRecord.LocCode;
-                }
-                catch (Exception ex)
-                {
-                    locByDealerName = "";
-                }
-
-            }
-            return locByDealerName;
-        }
-
+      
         public List<LeadRoute> GetLeadRouteStk(int id, string vendorCode, string locCode, string mall)
         {
             Console.WriteLine("Get Lead With Stk");

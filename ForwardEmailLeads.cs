@@ -29,7 +29,7 @@ namespace FMLeadRouter
                 Port = Convert.ToInt32(ConfigurationManager.AppSettings["imapPort"]),
                 Ssl = Convert.ToBoolean(ConfigurationManager.AppSettings["ssl"]),
                 Login = ConfigurationManager.AppSettings["imapUser"],
-                Password = ConfigurationManager.AppSettings["imapPass"]
+                Password = "Route1970!"
             };
 
             return credentials;
@@ -45,6 +45,18 @@ namespace FMLeadRouter
         public int Sms { get; set; }
         public DateTime CreateDate { get; set; }
     }
+
+
+    public class LocationByDealerName
+    {
+        public int ID { get; set; }
+        public string FullName { get; set; }
+        public string LocCode { get; set; }
+        public string Mall { get; set; }
+        public int State { get; set; }
+
+    }
+
 
     public class LeadRoute
     {
@@ -114,6 +126,12 @@ namespace FMLeadRouter
         public string Mall { get; set; }
         public string Cond { get; set; }
         public string Wholesale { get; set; }
+    }
+
+    public class DealershipSearchResult
+    {
+        public string LocCode { get; set; }
+        public string Mall { get; set; }
     }
 
     public class CarDetails
@@ -795,16 +813,26 @@ namespace FMLeadRouter
                             }
                     }
 
-                    if (vendor.Id == 2)  // AUTOTRADER LFT leads to LFM if cars are there
+                    if (vendor.Id == 2)  // AUTOTRADER leads to where the dealer name indicates
                     {
-                        if (route.Loc == "LFT" && route.Mall == "GA")
-                        {
+
+                            string VendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
+                            
+                            string possibleLoc = _routeEmail.GetLeadRouteLocByDealerName(VendorName, route.Loc);
+                            if (possibleLoc != "" | possibleLoc != null)
+                            {
+                                route.Loc = possibleLoc;
+                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                            }
+
+                            if (route.Loc == "LFT" && route.Mall == "GA")
+                            {
                                 CarDetails car2 = new CarDetails();
 
                                 vehicleStockNumberForLookup = stockNumber; // find the location of car
-                            car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
-                            
-                            if (car2.Loc == "LFM")  // CAR AT LFM? ROUTE THE LEAD THERE
+                                car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
+                                // AUTOTRADER LFT leads to LFM if cars are there
+                                if (car2.Loc == "LFM")  // CAR AT LFM? ROUTE THE LEAD THERE
                                 {
                                     route.Loc = "LFM";
                                     route.Mall = "GM";

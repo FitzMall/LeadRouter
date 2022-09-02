@@ -629,12 +629,7 @@ namespace FMLeadRouter
 
             if (vendor.Id == 1076) // all hispanic leads go to FBN only after 8/18/22 re Harold Redden/Eyal Toueg
             {
-                MailMessage daveResponderMessage = new MailMessage();
-                daveResponderMessage.Subject = "hisp route " + make;
-                daveResponderMessage.Body = "stock " + stockNumber;
-                daveResponderMessage.Body += "make " + make;
-                RouteEmail(daveResponderMessage, "burroughsd@fitzmall.com");
-
+          
                 vehicleStockNumberForLookup = ""; // make is stock # for 1076 Hispanic Media
                 stockNumber = ""; 
 

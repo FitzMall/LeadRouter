@@ -818,6 +818,7 @@ namespace FMLeadRouter
 
                             string VendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
                             
+                            // check the Locations_Lkup table in Checklists (fitzway checkout db)
                             string possibleLoc = _routeEmail.GetLeadRouteLocByDealerName(VendorName, route.Loc);
                             if (possibleLoc != "" | possibleLoc != null)
                             {

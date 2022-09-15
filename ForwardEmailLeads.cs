@@ -302,10 +302,19 @@ namespace FMLeadRouter
         {
             Console.WriteLine("Process Messages...");
             IEnumerable<MailMessage> messages = _client.GetMessages(uids);
+            string previousMailBody = ""; // save previous mail body for comparison
+
             foreach (var mailMessage in messages)
             {
                 //Check if it needs to be routed
-                CallRouteProcessAdf2(mailMessage);
+                if (mailMessage.Body != previousMailBody)  // dupes?
+                {
+                    CallRouteProcessAdf2(mailMessage);
+                } else
+                {
+                    var log = LogEmailDuplicateRoute(mailMessage);
+                }
+                previousMailBody = mailMessage.Body; // save previous mail body for comparison
             }
             //Move Processed Messages
             MoveProcessedMessages(uids);
@@ -986,6 +995,24 @@ namespace FMLeadRouter
         {
             if (string.IsNullOrEmpty(text)) return "";
             return _invalidXMLChars.Replace(text, "");
+        }
+
+
+        //Log Email
+        private static LeadRouteLog LogEmailDuplicateRoute(MailMessage mailMessage)
+        {
+            var log = new LeadRouteLog();
+            log.MailId = String.Empty;
+            log.FromAddress = mailMessage.From.Address;
+            log.ToAddress = "Duplicate";
+            log.Subject = mailMessage.Subject;
+            log.Body = mailMessage.Body;
+            log.Status = string.Empty;
+            log.LeadVendorId = 0;
+            log.LeadRouteId = 0;
+
+            _routeEmail.InsertIntoLog(log);
+            return log;
         }
 
 

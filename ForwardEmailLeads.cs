@@ -835,7 +835,7 @@ namespace FMLeadRouter
 
                             }
 
-                            if (route.Loc == "LFT" && route.Mall == "GA"| route.Loc == "LFM" && route.Mall == "GM")
+                            if (route.Loc == "LFT" | route.Loc == "LFM" )
                             {
                                 CarDetails car2 = new CarDetails();
 

@@ -848,7 +848,7 @@ namespace FMLeadRouter
                                     route.Mall = "GM";
                                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                                 }
-                                if (car2.Loc == "LFT")  // CAR AT LFM? ROUTE THE LEAD THERE
+                                if (car2.Loc == "LFT")  // CAR AT LFT? ROUTE THE LEAD THERE
                                 {
                                     route.Loc = "LFT";
                                     route.Mall = "GA";

@@ -821,43 +821,35 @@ namespace FMLeadRouter
                     if (vendor.Id == 2)  // AUTOTRADER leads to where the dealer name indicates
                     {
 
-                            if (stockNumber == ""| stockNumber != null)
+
+                            if (stockNumber == ""| stockNumber == null)
                             {
-                                string VendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
-                            
-                                // check the Locations_Lkup table in Checklists (fitzway checkout db)
-                                string possibleLoc = _routeEmail.GetLeadRouteLocByDealerName(VendorName, route.Loc);
-                                if (possibleLoc != "" | possibleLoc != null)
-                                {
-                                    route.Loc = possibleLoc;
-                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                }
-
+                                route.Loc = "LFT";
+                                route.Mall = "GA";
+                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                             }
-
-                            if (route.Loc == "LFT" | route.Loc == "LFM" )
+                            else
                             {
                                 CarDetails car2 = new CarDetails();
 
                                 vehicleStockNumberForLookup = stockNumber; // find the location of car
                                 car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
-                                // AUTOTRADER LFT leads to LFM if cars are there
-                                if (car2.Loc == "LFM")  // CAR AT LFM? ROUTE THE LEAD THERE
-                                {
-                                    route.Loc = "LFM";
-                                    route.Mall = "GM";
-                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                }
-                                if (car2.Loc == "LFT")  // CAR AT LFT? ROUTE THE LEAD THERE
+                                if (car2.Loc == "" | car2.Loc == null)
                                 {
                                     route.Loc = "LFT";
                                     route.Mall = "GA";
                                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                                 }
+                                else
+                                {
+                                    route.Loc = car2.Loc;
+                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                }
                             }
-                        }
 
-                    RouteEmail(mailMessage, route);
+
+                    }
+                            RouteEmail(mailMessage, route);
 
                     if (make.ToLower() == "hyundai" && status.ToLower() != "used")
                     {

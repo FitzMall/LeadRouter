@@ -112,26 +112,6 @@ namespace FMLeadRouter
         }
 
 
-        public string GetLeadRouteLocByDealerName(string dealerName, string presentLoc)
-        {
-            string possibleLoc = presentLoc;
-            string sql = @"SELECT LocCode, Mall FROM [Checklists].[dbo].[Locations_lkup] WHERE [FullName] = @dealerName";
-            var ResultDealershipSearch = SqlMapperUtil.SqlWithParams<DealershipSearchResult>(sql, new { dealerName }).FirstOrDefault();
-
-            try
-            {
-                possibleLoc = ResultDealershipSearch.LocCode;
-            }
-            catch (Exception ex)
-            { 
-
-            }
-
-
-            return possibleLoc;
-        }
-
-
         public LeadVendor GetLeadVendorByEmail(string email)
         {
             if (email.Contains("@anon.cargurus.com"))

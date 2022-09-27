@@ -818,7 +818,7 @@ namespace FMLeadRouter
                             }
                     }
 
-                    if (vendor.Id == 2)  // AUTOTRADER leads to where the dealer name indicates
+                    if (vendor.Id == 2)  // AUTOTRADER leads to where the car is- re Harold Redden explicit instructions
                     {
 
 

@@ -820,31 +820,31 @@ namespace FMLeadRouter
 
                     if (vendor.Id == 2)  // AUTOTRADER leads to where the car is- re Harold Redden explicit instructions
                     {
-
-
                             if (stockNumber == ""| stockNumber == null)
                             {
                                 route.Loc = "LFT";
                                 route.Mall = "GA";
                                 route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                             }
-                            else
+                            else 
                             {
-                                CarDetails car2 = new CarDetails();
-
-                                vehicleStockNumberForLookup = stockNumber; // find the location of car
-                                car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
-                                if (car2.Loc == "" | car2.Loc == null)
-                                {
-                                    route.Loc = "LFT";
-                                    route.Mall = "GA";
-                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                }
-                                else
-                                {
-                                    route.Loc = car2.Loc;
-                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                }
+                                    vehicleStockNumberForLookup = stockNumber; // find the location of car
+                                    CarDetails car2 = new CarDetails();
+                                    car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
+                                    if (car2.Loc == "" | car2.Loc == null)
+                                    {
+                                        route.Loc = "LFT";
+                                        route.Mall = "GA";
+                                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                    }
+                                    else
+                                    {
+                                    // LFT and LFM are the troublesome ones- must go where car is!
+                                       if (route.Loc == "LFT" | route.Loc == "LFM") { 
+                                            route.Loc = car2.Loc;
+                                            route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                       }
+                                    }
                             }
 
 

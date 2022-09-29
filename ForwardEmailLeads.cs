@@ -302,19 +302,13 @@ namespace FMLeadRouter
         {
             Console.WriteLine("Process Messages...");
             IEnumerable<MailMessage> messages = _client.GetMessages(uids);
-            string previousMailBody = ""; // save previous mail body for comparison
-
+            int thisMsg = 0;
             foreach (var mailMessage in messages)
             {
                 //Check if it needs to be routed
-                if (mailMessage.Body != previousMailBody)  // dupes?
-                {
                     CallRouteProcessAdf2(mailMessage);
-                } else
-                {
-                    var log = LogEmailDuplicateRoute(mailMessage);
-                }
-                previousMailBody = mailMessage.Body; // save previous mail body for comparison
+                //MoveProcessedMessages(uids[thisMsg]);
+                thisMsg += 1;
             }
             //Move Processed Messages
             MoveProcessedMessages(uids);
@@ -800,7 +794,7 @@ namespace FMLeadRouter
                 {
                     //notify me
                     mailMessage.Subject = String.Format("Lead Router SPAM ALERT:{0}", mailMessage.Subject);
-                    RouteEmail(mailMessage, "statlerc@fitzmall.com,morrisonk@fitzmall.com,punchs@fitzmall.com");
+                    RouteEmail(mailMessage, "statlerc@fitzmall.com,morrisonk@fitzmall.com");
                 }
                 else
                 {
@@ -831,24 +825,28 @@ namespace FMLeadRouter
                                     vehicleStockNumberForLookup = stockNumber; // find the location of car
                                     CarDetails car2 = new CarDetails();
                                     car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
-                                    if (car2.Loc == "" | car2.Loc == null)
+                                    
+                                    if (car2 != null)
                                     {
-                                        route.Loc = "LFT";
-                                        route.Mall = "GA";
-                                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                    }
-                                    else
-                                    {
-                                    // LFT and LFM are the troublesome ones- must go where car is!
-                                       if (route.Loc == "LFT" | route.Loc == "LFM") { 
-                                            route.Loc = car2.Loc;
+                                        if (car2.Loc == "" | car2.Loc == null)
+                                        {
+                                            route.Loc = "LFT";
+                                            route.Mall = "GA";
                                             route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                       }
+                                        }
+                                        else
+                                        {
+                                        // LFT and LFM are the troublesome ones- must go where car is!
+                                           if (route.Loc == "LFT" | route.Loc == "LFM") { 
+                                                route.Loc = car2.Loc;
+                                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                           }
+                                        }
                                     }
                             }
 
 
-                    }
+                        }
                             RouteEmail(mailMessage, route);
 
                     if (make.ToLower() == "hyundai" && status.ToLower() != "used")
@@ -947,13 +945,13 @@ namespace FMLeadRouter
                         {
                             mailMessage.Subject = String.Format("Lead Router FW:{0}", mailMessage.Subject);
                         }
-                        RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com,punchs@fitzmall.com");
+                        RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
 
                     }
                     else
                     {
                         mailMessage.Subject = String.Format("Lead Router FW2:{0}", mailMessage.Subject);
-                        RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com,punchs@fitzmall.com");
+                        RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
                     }
 
 
@@ -1332,7 +1330,12 @@ namespace FMLeadRouter
                 }
                 catch (Exception ex)
                 {
-                    SendAlert("Email Not Forwarded", String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}{5} Error:{4}", mail.From.Address, forward.To[0].Address, mail.Subject, mail.Date(), ex.Message, Environment.NewLine));
+                    string ForwardTo = "";
+                    if (forward.To.Count > 0)
+                    {
+                        ForwardTo = forward.To[0].Address;
+                    }
+                    SendAlert("Email Not Forwarded", String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}{5} Error:{4}", mail.From.Address, ForwardTo, mail.Subject, mail.Date(), ex.Message, Environment.NewLine));
                     Console.WriteLine(ex.Message);
                 }
             }
@@ -1507,7 +1510,7 @@ namespace FMLeadRouter
         {
             if (uids.Any())
             {
-                _client.MoveMessages(uids, "Processed", _client.DefaultMailbox);
+                _client.MoveMessages(uids, "Processed");
             }
         }
 

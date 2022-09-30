@@ -68,6 +68,36 @@ namespace FMLeadRouter
             return result;
         }
 
+        public int InsertIntoMailErrorLog(MailError log)
+        {
+            const string sql = @"
+                    INSERT INTO [VinSolution].[dbo].[MailError]
+                               ([MailId]
+                               ,[FromAddress]
+                               ,[ToAddress]
+                               ,[Subject]
+                               ,[Body]
+                               ,[Status]
+                               ,[ErrorTitle]
+                               ,[ErrorMessage]
+                               ,[LeadVendorId]
+                               ,[LeadRouteId])
+                         VALUES
+                               (@MailId
+                               ,@FromAddress
+                               ,@ToAddress
+                               ,@Subject
+                               ,@Body
+                               ,@Status
+                               ,@ErrorTitle
+                               ,@ErrorMessage
+                               ,@LeadVendorId
+                               ,@LeadRouteId)";
+
+            var result = SqlMapperUtil.InsertUpdateOrDeleteSql(sql, log);
+            return result;
+        }
+
         public int InsertIntoRoute(LeadRoute route)
         {
             const string sql = @"

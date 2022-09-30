@@ -29,7 +29,7 @@ namespace FMLeadRouter
                 Port = Convert.ToInt32(ConfigurationManager.AppSettings["imapPort"]),
                 Ssl = Convert.ToBoolean(ConfigurationManager.AppSettings["ssl"]),
                 Login = ConfigurationManager.AppSettings["imapUser"],
-                Password = "Route1970!"
+                Password = ConfigurationManager.AppSettings["imapPass"]
             };
 
             return credentials;
@@ -77,6 +77,21 @@ namespace FMLeadRouter
         public DateTime CreateDate { get; set; }
     }
 
+    public class MailError
+    {
+        public int Id { get; set; }
+        public string MailId { get; set; }
+        public string FromAddress { get; set; }
+        public string ToAddress { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+        public string Status { get; set; }//not used for anything yet.
+        public int LeadVendorId { get; set; }
+        public int LeadRouteId { get; set; }
+        public DateTime CreateDate { get; set; }
+    }
+
+
     public class LeadRouteLog
     {
         public int Id { get; set; }
@@ -89,6 +104,8 @@ namespace FMLeadRouter
         public int LeadVendorId { get; set; }
         public int LeadRouteId { get; set; }
         public DateTime CreateDate { get; set; }
+   
+
     }
 
     public class LeadVendorCodeXPath
@@ -380,6 +397,9 @@ namespace FMLeadRouter
         private static void CallRouteProcessAdf2(MailMessage mailMessage, string createRoute = null)
         {
             //This is the main body of code to determine the route...
+            string errorMailShort;
+            string errorMailLong;
+
             Console.WriteLine("Email From: {0}", mailMessage.From.Address);
             MailMessage orgMailMessage = mailMessage;
 
@@ -895,12 +915,17 @@ namespace FMLeadRouter
                                 }
                                 catch (Exception ex)
                                 {
-                                    SendAlert("Lead Router Error Occured: Route not inserted",
-                                        String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
+                                    errorMailShort= "Lead Router Error Occured: Route not inserted";
+                                    errorMailLong = String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
                                             orgMailMessage.From, orgMailMessage.To[0], orgMailMessage.Subject,
-                                            orgMailMessage.Date(), ex.Message));
-                                }
-                                finally
+                                            orgMailMessage.Date(), ex.Message);
+
+                                    SendAlert(errorMailShort, errorMailLong
+                                        );
+                                        var logEmail = LogMailError(mailMessage, route, errorMailShort, errorMailLong);
+
+                                    }
+                                    finally
                                 {
                                     if (crmEmail != null)
                                     {
@@ -924,13 +949,17 @@ namespace FMLeadRouter
                                         }
                                         catch (Exception ex)
                                         {
-                                            SendAlert("Lead Router Error Occured: Route not inserted",
-                                                String.Format(
-                                                    "Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
-                                                    orgMailMessage.From, orgMailMessage.To[0], orgMailMessage.Subject,
-                                                    orgMailMessage.Date(), ex.Message));
-                                        }
-                                        finally
+
+                                                errorMailShort = "Lead Router Error Occured: Route not inserted";
+                                                errorMailLong = String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
+                                                        orgMailMessage.From, orgMailMessage.To[0], orgMailMessage.Subject,
+                                                        orgMailMessage.Date(), ex.Message);
+
+                                                SendAlert(errorMailShort, errorMailLong
+                                                    );
+                                                var logEmail = LogMailError(mailMessage, route, errorMailShort, errorMailLong);
+                                            }
+                                            finally
                                         {
                                             //route again                                        
                                             CallRouteProcessAdf2(orgMailMessage, "create");
@@ -1022,6 +1051,23 @@ namespace FMLeadRouter
             _routeEmail.InsertIntoLog(log);
             return log;
         }
+
+        private static MailError LogMailError(MailMessage mailMessage, LeadRoute leadRoute, string ErrTitle, string ErrMsg)
+        {
+            var log = new MailError();
+            log.MailId = String.Empty;
+            log.FromAddress = mailMessage.From.Address;
+            log.ToAddress = leadRoute != null ? leadRoute.ForwardEmail : "No Route";
+            log.Subject = mailMessage.Subject;
+            log.Body = mailMessage.Body;
+            log.Status = string.Empty;
+            log.LeadVendorId = leadRoute != null ? leadRoute.LeadVendorId : 0;
+            log.LeadRouteId = leadRoute != null ? leadRoute.Id : 0;
+
+            _routeEmail.InsertIntoMailErrorLog(log);
+            return log;
+        }
+
 
         private static string CorrectFormattingIssues(string body)
         {
@@ -1336,6 +1382,7 @@ namespace FMLeadRouter
                         ForwardTo = forward.To[0].Address;
                     }
                     SendAlert("Email Not Forwarded", String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}{5} Error:{4}", mail.From.Address, ForwardTo, mail.Subject, mail.Date(), ex.Message, Environment.NewLine));
+                    var log = LogEmail(mail, route);
                     Console.WriteLine(ex.Message);
                 }
             }

@@ -845,10 +845,6 @@ namespace FMLeadRouter
                             }
                             else 
                             {
-                                    string CRMEmail =  _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                    if (CRMEmail != "") {
-                                        route.ForwardEmail = CRMEmail;
-                                    }
                                     vehicleStockNumberForLookup = stockNumber; // find the location of car
                                     CarDetails car2 = new CarDetails();
                                     car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);

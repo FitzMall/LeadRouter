@@ -836,12 +836,19 @@ namespace FMLeadRouter
                     {
                             if (stockNumber == ""| stockNumber == null)
                             {
-                                route.Loc = "LFT";
-                                route.Mall = "GA";
-                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                if (route.Loc == "" | route.Loc == null)
+                                {
+                                    route.Loc = "LFT";
+                                    route.Mall = "GA";
+                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                }
                             }
                             else 
                             {
+                                    string CRMEmail =  _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                    if (CRMEmail != "") {
+                                        route.ForwardEmail = CRMEmail;
+                                    }
                                     vehicleStockNumberForLookup = stockNumber; // find the location of car
                                     CarDetails car2 = new CarDetails();
                                     car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
@@ -850,9 +857,12 @@ namespace FMLeadRouter
                                     {
                                         if (car2.Loc == "" | car2.Loc == null)
                                         {
-                                            route.Loc = "LFT";
-                                            route.Mall = "GA";
-                                            route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                            if (route.Loc == "" | route.Loc == null)
+                                            {
+                                                route.Loc = "LFT";
+                                                route.Mall = "GA";
+                                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                            }
                                         }
                                         else
                                         {
@@ -866,7 +876,7 @@ namespace FMLeadRouter
                             }
 
 
-                        }
+                    }
                             RouteEmail(mailMessage, route);
 
                     if (make.ToLower() == "hyundai" && status.ToLower() != "used")

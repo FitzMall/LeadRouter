@@ -836,12 +836,9 @@ namespace FMLeadRouter
                     {
                             if (stockNumber == ""| stockNumber == null)
                             {
-                                if (route.Loc == "" | route.Loc == null)
-                                {
-                                    route.Loc = "LFT";
-                                    route.Mall = "GA";
-                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                }
+                                route.Loc = "LFT";
+                                route.Mall = "GA";
+                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                             }
                             else 
                             {
@@ -853,12 +850,9 @@ namespace FMLeadRouter
                                     {
                                         if (car2.Loc == "" | car2.Loc == null)
                                         {
-                                            if (route.Loc == "" | route.Loc == null)
-                                            {
-                                                route.Loc = "LFT";
-                                                route.Mall = "GA";
-                                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                            }
+                                            route.Loc = "LFT";
+                                            route.Mall = "GA";
+                                            route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                                         }
                                         else
                                         {
@@ -872,7 +866,7 @@ namespace FMLeadRouter
                             }
 
 
-                    }
+                        }
                             RouteEmail(mailMessage, route);
 
                     if (make.ToLower() == "hyundai" && status.ToLower() != "used")

@@ -733,7 +733,7 @@ namespace FMLeadRouter
                 if (!String.IsNullOrEmpty(stockNumber))
                 {
    
-                if (car != null && car.Loc != null)
+                if (car != null && car.Loc != null && car.Mall != "CL")
                 {
                     leadRoute = _routeEmail.GetLeadRouteStk(vendor.Id, vendorCode, car.Loc, car.Mall);
 
@@ -796,9 +796,24 @@ namespace FMLeadRouter
                 }
             }
 
+                if (vendor.Id == 2)  // AUTOTRADER leads to where the car is- re Harold Redden explicit instructions
+                {
+                    if (stockNumber == "" | stockNumber == null)
+                    {
+                        if (route.Loc == "CSS")
+                        {
+                            string vendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
 
-
-            if (route.Name != null)
+                            if (vendorName == "Fitzgerald Clearwater Outlet Center")
+                            {
+                                route.Loc = "COC";
+                                route.Mall = "CL";
+                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                            }
+                        }
+                    }
+                }
+                        if (route.Name != null)
             {
                 string ls = String.Format("{0}", route.LeadSourceAddOn ?? route.Loc);
 
@@ -836,9 +851,12 @@ namespace FMLeadRouter
                     {
                             if (stockNumber == ""| stockNumber == null)
                             {
-                                route.Loc = "LFT";
-                                route.Mall = "GA";
-                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                if (route.Loc == "LFO")
+                                {
+                                    route.Loc = "LFT";
+                                    route.Mall = "GA";
+                                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                }
                             }
                             else 
                             {

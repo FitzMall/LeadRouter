@@ -104,7 +104,7 @@ namespace FMLeadRouter
         public int LeadVendorId { get; set; }
         public int LeadRouteId { get; set; }
         public DateTime CreateDate { get; set; }
-   
+
 
     }
 
@@ -188,7 +188,7 @@ namespace FMLeadRouter
     public class Incentive
     {
         public string IncentiveTitle { get; set; }
-	    public DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Store { get; set; }
         public string Description { get; set; }
@@ -219,7 +219,7 @@ namespace FMLeadRouter
         private static RouteEmailLeads _routeEmail;
         static AutoResetEvent reconnectEvent = new AutoResetEvent(false);
         private static Thread _thread;
-        
+
 
         public BackgroundWorker bw = new BackgroundWorker();
         private bool _restart = false;
@@ -391,7 +391,7 @@ namespace FMLeadRouter
             //Check if Inbox has more than 2 emails read, but lingering, send email alert if true
             CheckInboxStatus();
 
-        
+
         }
 
         private static bool CallRouteProcessAdf2(MailMessage mailMessage, string createRoute = null)
@@ -450,11 +450,11 @@ namespace FMLeadRouter
             var make = GetMake(mailMessage.Body, "/adf/prospect/vehicle/make");
             //check for used
 
-                if (String.IsNullOrEmpty(make))
-                {
-                    make = GetMake(mailMessage.Body, "/adf/prospect/vehicle/@status");
-                }
-      
+            if (String.IsNullOrEmpty(make))
+            {
+                make = GetMake(mailMessage.Body, "/adf/prospect/vehicle/@status");
+            }
+
             var status = GetMake(mailMessage.Body, "/adf/prospect/vehicle/@status");
             //check for used
             if (String.IsNullOrEmpty(status))
@@ -483,7 +483,7 @@ namespace FMLeadRouter
             //TrueCar ZipCode Prime Markets
             var primeMarketIdentifier = "";
 
-            if(vendor.Id == 67)
+            if (vendor.Id == 67)
             {
                 var zipCode = GetZipCode(mailMessage.Body, "/adf/prospect/customer/contact/address/postalcode");
 
@@ -521,13 +521,13 @@ namespace FMLeadRouter
                             vendorCode = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
                         }
                         break;
-                    }                    
+                    }
 
                 }
             }
 
             // THIS IS FOR KBB PURCHASE A VEHICLE
-            if(vendorCode.IndexOf('[') > 0)
+            if (vendorCode.IndexOf('[') > 0)
             {
                 vendorCode = vendorCode.Substring(0, vendorCode.IndexOf('[')).Trim();
             }
@@ -554,8 +554,8 @@ namespace FMLeadRouter
             var bDontForwardLead = false;
 
 
-                //DO THIS IF IT IS DEALER.COM ONLY -- FOR NOW
-                if (vendor.Id == 34)
+            //DO THIS IF IT IS DEALER.COM ONLY -- FOR NOW
+            if (vendor.Id == 34)
             {
                 var proService = GetProviderService(mailMessage.Body, "/adf/prospect/provider/service");
                 if (!String.IsNullOrEmpty(proService))
@@ -654,9 +654,9 @@ namespace FMLeadRouter
 
             if (vendor.Id == 1076) // all hispanic leads go to FBN only after 8/18/22 re Harold Redden/Eyal Toueg
             {
-          
+
                 vehicleStockNumberForLookup = ""; // make is stock # for 1076 Hispanic Media
-                stockNumber = ""; 
+                stockNumber = "";
 
             }
 
@@ -734,11 +734,60 @@ namespace FMLeadRouter
 
                 if (!String.IsNullOrEmpty(stockNumber))
                 {
-   
-                if (car != null && car.Loc != null && car.Mall != "CL")
-                {
-                    leadRoute = _routeEmail.GetLeadRouteStk(vendor.Id, vendorCode, car.Loc, car.Mall);
 
+                    if (car != null && car.Loc != null && car.Mall != "CL")
+                    {
+                        leadRoute = _routeEmail.GetLeadRouteStk(vendor.Id, vendorCode, car.Loc, car.Mall);
+
+
+                        foreach (var rt in leadRoute)
+                        {
+                            bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);
+                            if (!rule) continue;
+                            route = rt;
+                            break;
+                        }
+                        if (!String.IsNullOrEmpty(car.Wholesale) && car.Wholesale == "Y")
+                        {
+                            route.Loc = String.Format("{0}~", car.Loc); //wholesale vehicles add * to end of loc code
+                        }
+                        else
+                        {
+                            route.Loc = car.Loc; //override route with car loc                        
+                        }
+                    }
+                    else
+                    {
+                        if (!String.IsNullOrEmpty(vendorCode) && !String.IsNullOrEmpty(make))
+                        {
+
+
+                            leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode, make.ToLower());
+                            foreach (var rt in leadRoute)
+                            {
+                                bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);
+                                if (!rule) continue;
+                                route = rt;
+                                break;
+                            }
+                        }
+                        if (!String.IsNullOrEmpty(vendorCode) && String.IsNullOrEmpty(make))
+                        {
+
+                            leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode);
+                            foreach (var rt in leadRoute)
+                            {
+                                bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);
+                                if (!rule) continue;
+                                route = rt;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode, make);
 
                     foreach (var rt in leadRoute)
                     {
@@ -747,111 +796,62 @@ namespace FMLeadRouter
                         route = rt;
                         break;
                     }
-                    if (!String.IsNullOrEmpty(car.Wholesale) && car.Wholesale == "Y")
+                }
+
+                string vendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
+
+                if (vendorName == "Fitzgerald Clearwater Outlet Center")
+                {
+                    route.Loc = "COC";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+
+                if (vendorName == "Fitzgerald Auto Mall Clearwater Used Car Outlet")
+                {
+                    route.Loc = "COC";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if (route.Name != null)
+                {
+                    string ls = String.Format("{0}", route.LeadSourceAddOn ?? route.Loc);
+
+                    var editedXml = ChangeLeadSource(mailMessage.Body, route.XmlLeadSource ?? "/adf/prospect/provider/name", detailLabel + String.Format(" - {0}", ls) + primeMarketIdentifier);
+
+                    //If their is no stock # then use default loc code in Route
+                    if (!String.IsNullOrEmpty(editedXml))
                     {
-                        route.Loc = String.Format("{0}~", car.Loc); //wholesale vehicles add * to end of loc code
+                        mailMessage.Body = editedXml;
+                    }
+                    //Route Email
+                    if (isSpam)
+                    {
+                        //notify me
+                        mailMessage.Subject = String.Format("Lead Router SPAM ALERT:{0}", mailMessage.Subject);
+                        RouteEmail(mailMessage, "statlerc@fitzmall.com,morrisonk@fitzmall.com");
                     }
                     else
                     {
-                        route.Loc = car.Loc; //override route with car loc                        
-                    }
-                }
-                else
-                {
-                    if (!String.IsNullOrEmpty(vendorCode) && !String.IsNullOrEmpty(make))
-                    {
-
-
-                        leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode, make.ToLower());
-                        foreach (var rt in leadRoute)
-                        {
-                            bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);
-                            if (!rule) continue;
-                            route = rt;
-                            break;
-                        }
-                    }
-                    if (!String.IsNullOrEmpty(vendorCode) && String.IsNullOrEmpty(make))
-                    {
-
-                        leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode);
-                        foreach (var rt in leadRoute)
-                        {
-                            bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);
-                            if (!rule) continue;
-                            route = rt;
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                leadRoute = _routeEmail.GetLeadRouteNoStk(vendor.Id, vendorCode, make);
-
-                foreach (var rt in leadRoute)
-                {
-                    bool rule = CheckingRule(mailMessage.Body, rt.XmlRule);
-                    if (!rule) continue;
-                    route = rt;
-                    break;
-                }
-            }
-
-                if (vendor.Id == 2)  // AUTOTRADER leads to where the car is- re Harold Redden explicit instructions
-                {
-                    if (stockNumber == "" | stockNumber == null)
-                    {
-                        if (route.Loc == "CSS")
-                        {
-                            string vendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
-
-                            if (vendorName == "Fitzgerald Clearwater Outlet Center")
-                            {
-                                route.Loc = "COC";
-                                route.Mall = "CL";
-                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                            }
-                        }
-                    }
-                }
-                        if (route.Name != null)
-            {
-                string ls = String.Format("{0}", route.LeadSourceAddOn ?? route.Loc);
-
-                var editedXml = ChangeLeadSource(mailMessage.Body, route.XmlLeadSource ?? "/adf/prospect/provider/name", detailLabel + String.Format(" - {0}", ls) + primeMarketIdentifier);
-
-                //If their is no stock # then use default loc code in Route
-                if (!String.IsNullOrEmpty(editedXml))
-                {
-                    mailMessage.Body = editedXml;
-                }
-                //Route Email
-                if (isSpam)
-                {
-                    //notify me
-                    mailMessage.Subject = String.Format("Lead Router SPAM ALERT:{0}", mailMessage.Subject);
-                    RouteEmail(mailMessage, "statlerc@fitzmall.com,morrisonk@fitzmall.com");
-                }
-                else
-                {
 
                         //DO THIS IF IT IS KBB ONLY (70) KBB ICO
                         // "All KBB leads with no vehicle listed (to purchase) and trade-in info only should be directed to the Toyota store"
 
-                    if (vendor.Id == 1080)
-                    {
-                        if (interest == "trade-in")
+                        if (vendor.Id == 1080)
+                        {
+                            if (interest == "trade-in")
                             {
                                 route.Loc = "LFT";
                                 route.Mall = "GA";
                                 route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                             }
-                    }
+                        }
 
-                    if (vendor.Id == 2)  // AUTOTRADER leads to where the car is- re Harold Redden explicit instructions
-                    {
-                            if (stockNumber == ""| stockNumber == null)
+                        if (vendor.Id == 2)  // AUTOTRADER leads to where the car is- re Harold Redden explicit instructions
+                        {
+                            if (stockNumber == "" | stockNumber == null)
                             {
                                 if (route.Loc == "LFO")
                                 {
@@ -860,85 +860,86 @@ namespace FMLeadRouter
                                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                                 }
                             }
-                            else 
+                            else
                             {
-                                    vehicleStockNumberForLookup = stockNumber; // find the location of car
-                                    CarDetails car2 = new CarDetails();
-                                    car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
-                                    
-                                    if (car2 != null)
+                                vehicleStockNumberForLookup = stockNumber; // find the location of car
+                                CarDetails car2 = new CarDetails();
+                                car2 = _routeEmail.GetVehicleDetails(vehicleStockNumberForLookup);
+
+                                if (car2 != null)
+                                {
+                                    if (car2.Loc == "" | car2.Loc == null)
                                     {
-                                        if (car2.Loc == "" | car2.Loc == null)
+                                        route.Loc = "LFT";
+                                        route.Mall = "GA";
+                                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                    }
+                                    else
+                                    {
+                                        // LFT and LFM are the troublesome ones- must go where car is!
+                                        if (route.Loc == "LFT" | route.Loc == "LFM")
                                         {
-                                            route.Loc = "LFT";
-                                            route.Mall = "GA";
+                                            route.Loc = car2.Loc;
                                             route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                                         }
-                                        else
-                                        {
-                                        // LFT and LFM are the troublesome ones- must go where car is!
-                                           if (route.Loc == "LFT" | route.Loc == "LFM") { 
-                                                route.Loc = car2.Loc;
-                                                route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                                           }
-                                        }
                                     }
+                                }
                             }
 
 
                         }
-                            RouteEmail(mailMessage, route);
+                        RouteEmail(mailMessage, route);
 
-                    if (make.ToLower() == "hyundai" && status.ToLower() != "used")
-                    {
-                        var autoHookAddress = "";
+                        if (make.ToLower() == "hyundai" && status.ToLower() != "used")
+                        {
+                            var autoHookAddress = "";
 
-                        if (route.Loc == "LFO")
-                        {
-                            autoHookAddress = "fitzgeraldslakeforersthyundaileads@driveauthook.com";
-                        }
-                        else if (route.Loc == "CHY")
-                        {
-                            autoHookAddress = "fitzgeraldscountrysidehyundaileads@driveautohook.com";
-                        }
-                        else if (route.Loc == "CDO")
-                        {
-                            autoHookAddress = "fitzgeraldhyundaileads@driveautohook.com";
-                        }
+                            if (route.Loc == "LFO")
+                            {
+                                autoHookAddress = "fitzgeraldslakeforersthyundaileads@driveauthook.com";
+                            }
+                            else if (route.Loc == "CHY")
+                            {
+                                autoHookAddress = "fitzgeraldscountrysidehyundaileads@driveautohook.com";
+                            }
+                            else if (route.Loc == "CDO")
+                            {
+                                autoHookAddress = "fitzgeraldhyundaileads@driveautohook.com";
+                            }
 
-                        RouteEmail(mailMessage, autoHookAddress);
+                            RouteEmail(mailMessage, autoHookAddress);
+
+                        }
 
                     }
-
                 }
-            }
-            else
-            {
-                //Forward Emails with no route
-                //Ignore these email addresses
-                if (GetIgnoredEmailList().All(s => s.ToLower() != mailMessage.To.ToString().ToLower()))
+                else
                 {
-                    //If no route but ADF checks out then forward to IDD
-                    if (!String.IsNullOrEmpty(stockNumber) || !String.IsNullOrEmpty(make))
+                    //Forward Emails with no route
+                    //Ignore these email addresses
+                    if (GetIgnoredEmailList().All(s => s.ToLower() != mailMessage.To.ToString().ToLower()))
                     {
-                        //Add Loc Code to end of subject line
-                        if (car != null && car.Loc != null)
+                        //If no route but ADF checks out then forward to IDD
+                        if (!String.IsNullOrEmpty(stockNumber) || !String.IsNullOrEmpty(make))
                         {
-                            //Let's create a route and send it through again, must have a vendor
-                            if (createRoute == null && vendor.Id > 0 && !String.IsNullOrEmpty(vendorCode))
+                            //Add Loc Code to end of subject line
+                            if (car != null && car.Loc != null)
                             {
-                                //get crm forwarding email
-                                LeadCrmEmail crmEmail = null;
-                                try
+                                //Let's create a route and send it through again, must have a vendor
+                                if (createRoute == null && vendor.Id > 0 && !String.IsNullOrEmpty(vendorCode))
                                 {
-                                    crmEmail = _routeEmail.GetLeadCrmEmail(car.Loc);
-                                }
-                                catch (Exception ex)
-                                {
-                                    errorMailShort= "Lead Router Error Occured: Route not inserted";
-                                    errorMailLong = String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
-                                            orgMailMessage.From, orgMailMessage.To[0], orgMailMessage.Subject,
-                                            orgMailMessage.Date(), ex.Message);
+                                    //get crm forwarding email
+                                    LeadCrmEmail crmEmail = null;
+                                    try
+                                    {
+                                        crmEmail = _routeEmail.GetLeadCrmEmail(car.Loc);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        errorMailShort = "Lead Router Error Occured: Route not inserted";
+                                        errorMailLong = String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
+                                                orgMailMessage.From, orgMailMessage.To[0], orgMailMessage.Subject,
+                                                orgMailMessage.Date(), ex.Message);
                                         retval = false;
 
                                         SendAlert(errorMailShort, errorMailLong
@@ -947,29 +948,29 @@ namespace FMLeadRouter
 
                                     }
                                     finally
-                                {
-                                    if (crmEmail != null)
                                     {
-                                        //insert route
-                                        var lr = new LeadRoute();
-                                        lr.Name = String.Format("{0}-{1}-{2}", vendor.Name, car.Loc, car.Mall);
-                                        lr.LeadVendorId = vendor.Id;
-                                        lr.VendorCode = vendorCode;
-                                        lr.ForwardEmail = crmEmail.Email;
-                                        lr.IsActive = true;
-                                        lr.Loc = car.Loc;
-                                        lr.Mall = car.Mall;
-                                        lr.Make = "Used";
-                                        lr.CreateDate = DateTime.Now;
-                                        try
+                                        if (crmEmail != null)
                                         {
-                                            _routeEmail.InsertIntoRoute(lr);
-                                            SendAlert("New Route Added",
-                                                String.Format("Route: {0} forwards to email ->{1}", lr.Name,
-                                                    lr.ForwardEmail));
-                                        }
-                                        catch (Exception ex)
-                                        {
+                                            //insert route
+                                            var lr = new LeadRoute();
+                                            lr.Name = String.Format("{0}-{1}-{2}", vendor.Name, car.Loc, car.Mall);
+                                            lr.LeadVendorId = vendor.Id;
+                                            lr.VendorCode = vendorCode;
+                                            lr.ForwardEmail = crmEmail.Email;
+                                            lr.IsActive = true;
+                                            lr.Loc = car.Loc;
+                                            lr.Mall = car.Mall;
+                                            lr.Make = "Used";
+                                            lr.CreateDate = DateTime.Now;
+                                            try
+                                            {
+                                                _routeEmail.InsertIntoRoute(lr);
+                                                SendAlert("New Route Added",
+                                                    String.Format("Route: {0} forwards to email ->{1}", lr.Name,
+                                                        lr.ForwardEmail));
+                                            }
+                                            catch (Exception ex)
+                                            {
                                                 retval = false;
 
                                                 errorMailShort = "Lead Router Error Occured: Route not inserted";
@@ -982,40 +983,41 @@ namespace FMLeadRouter
                                                 var logEmail = LogMailError(mailMessage, route, errorMailShort, errorMailLong);
                                             }
                                             finally
-                                        {
+                                            {
                                                 //route again                                        
-                                                if (CallRouteProcessAdf2(orgMailMessage, "create") == false) {
+                                                if (CallRouteProcessAdf2(orgMailMessage, "create") == false)
+                                                {
                                                     retval = false;
                                                 };
+                                            }
                                         }
                                     }
-                                }
 
+                                }
+                                mailMessage.Subject = String.Format("Lead Router FW:{0}-{1}", mailMessage.Subject, car.Loc);
                             }
-                            mailMessage.Subject = String.Format("Lead Router FW:{0}-{1}", mailMessage.Subject, car.Loc);
+                            else
+                            {
+                                mailMessage.Subject = String.Format("Lead Router FW:{0}", mailMessage.Subject);
+                            }
+                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
+
                         }
                         else
                         {
-                            mailMessage.Subject = String.Format("Lead Router FW:{0}", mailMessage.Subject);
+                            mailMessage.Subject = String.Format("Lead Router FW2:{0}", mailMessage.Subject);
+                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
                         }
-                        RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
+
 
                     }
-                    else
-                    {
-                        mailMessage.Subject = String.Format("Lead Router FW2:{0}", mailMessage.Subject);
-                        RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
-                    }
-
 
                 }
 
             }
-        
-        }
             else
             {
-                
+
             }
             var log = LogEmail(mailMessage, route);
             return (retval);
@@ -1032,7 +1034,7 @@ namespace FMLeadRouter
         }
 
         // filters control characters but allows only properly-formed surrogate sequences
-        private static readonly Regex _invalidXMLChars = new Regex(@"(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\uFEFF\uFFFE\uFFFF]",RegexOptions.Compiled);
+        private static readonly Regex _invalidXMLChars = new Regex(@"(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\uFEFF\uFFFE\uFFFF]", RegexOptions.Compiled);
 
         private static string CorrectHiddenCharacters(string text)
         {
@@ -1124,7 +1126,7 @@ namespace FMLeadRouter
             {
                 SendAlert("Lead Router Error", String.Format("Message: {0}", ex.Message));
                 Console.WriteLine(ex.Message);
-                
+
             }
             return body;
         }
@@ -1151,7 +1153,7 @@ namespace FMLeadRouter
                 Console.WriteLine(ex.Message);
             }
             return body;
- 
+
         }
 
         public static string ReplaceString(string strSrc, string strStart, string strEnd, string replace)
@@ -1162,9 +1164,9 @@ namespace FMLeadRouter
                 int Start = strSrc.IndexOf(strStart, 0);
                 int End = strSrc.IndexOf(strEnd, Start) + strStart.Length;
                 var theStr = strSrc.Substring(Start, End - Start);
-                if ((End-Start) <= 6)
+                if ((End - Start) <= 6)
                 {
-                    newStr = ReplaceAt(strSrc, Start, End - Start, replace);                    
+                    newStr = ReplaceAt(strSrc, Start, End - Start, replace);
                 }
                 return newStr;
             }
@@ -1234,11 +1236,11 @@ namespace FMLeadRouter
             {
                 if (inverse)
                 {
-                    spam = !Regex.Match(node, regex).Success;                 
+                    spam = !Regex.Match(node, regex).Success;
                 }
                 else
                 {
-                    spam = Regex.Match(node, regex).Success;                    
+                    spam = Regex.Match(node, regex).Success;
                 }
             }
             return spam;
@@ -1297,7 +1299,7 @@ namespace FMLeadRouter
                     break;
                 }
             }
-            
+
             return match;
         }
 
@@ -1388,7 +1390,7 @@ namespace FMLeadRouter
                 try
                 {
 
-                    forward.From = new MailAddress("leads@fitzmall.com");                        
+                    forward.From = new MailAddress("leads@fitzmall.com");
                     mail.To.Clear();
                     forward.To.Add(route.ForwardEmail);
                     mail.CC.Clear();
@@ -1459,7 +1461,7 @@ namespace FMLeadRouter
                             {
                                 fromAddress = new MailAddress("fitzgeraldannapolis@fitzmall.com", "Fitzgerald Volkswagen Annapolis");
                             }
-                            
+
                             break;
                         case "FHG":
                             if (make.ToUpper() == "CADILLAC")
@@ -1476,7 +1478,7 @@ namespace FMLeadRouter
                             {
                                 fromAddress = new MailAddress("fitzgeraldchambersburgtoyotanissan@fitzmall.com", "Fitzgerald Nissan Chambersburg ");
                             }
-                                break;
+                            break;
                         case "CHY":
                             if (make.ToUpper() == "GENESIS")
                             {

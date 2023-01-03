@@ -219,7 +219,7 @@ namespace FMLeadRouter
         private static RouteEmailLeads _routeEmail;
         static AutoResetEvent reconnectEvent = new AutoResetEvent(false);
         private static Thread _thread;
-
+        
 
         public BackgroundWorker bw = new BackgroundWorker();
         private bool _restart = false;
@@ -318,17 +318,17 @@ namespace FMLeadRouter
         private static void ProcessUnreadMessages(List<uint> uids)
         {
             Console.WriteLine("Process Messages...");
-            IEnumerable<MailMessage> messages = _client.GetMessages(uids);
+            IEnumerable<MailMessage> messages = _client.GetMessages(uids, false);
             int thisMsg = 0;
             foreach (var mailMessage in messages)
             {
                 //Check if it needs to be routed
-                    CallRouteProcessAdf2(mailMessage);
-                //MoveProcessedMessages(uids[thisMsg]);
+                if (CallRouteProcessAdf2(mailMessage) == true)
+                {
+                    MoveProcessedMessages(uids[thisMsg]);
+                };
                 thisMsg += 1;
             }
-            //Move Processed Messages
-            MoveProcessedMessages(uids);
             //Check if Inbox has more than 5 emails unread, send email alert if true
             CheckInboxStatus();
         }
@@ -394,11 +394,12 @@ namespace FMLeadRouter
         
         }
 
-        private static void CallRouteProcessAdf2(MailMessage mailMessage, string createRoute = null)
+        private static bool CallRouteProcessAdf2(MailMessage mailMessage, string createRoute = null)
         {
             //This is the main body of code to determine the route...
             string errorMailShort;
             string errorMailLong;
+            bool retval = true;
 
             Console.WriteLine("Email From: {0}", mailMessage.From.Address);
             MailMessage orgMailMessage = mailMessage;
@@ -717,6 +718,7 @@ namespace FMLeadRouter
                     catch (Exception ex)
                     {
                         customerComments = "   (Email Failed to send to customer, reason: " + ex.Message + "   )";
+                        retval = false;
                     }
 
                     mailMessage.Body = ChangeCustomerComments(mailMessage.Body, "/adf/prospect/customer/comments", customerComments);
@@ -937,8 +939,9 @@ namespace FMLeadRouter
                                     errorMailLong = String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
                                             orgMailMessage.From, orgMailMessage.To[0], orgMailMessage.Subject,
                                             orgMailMessage.Date(), ex.Message);
+                                        retval = false;
 
-                                    SendAlert(errorMailShort, errorMailLong
+                                        SendAlert(errorMailShort, errorMailLong
                                         );
                                         var logEmail = LogMailError(mailMessage, route, errorMailShort, errorMailLong);
 
@@ -967,6 +970,7 @@ namespace FMLeadRouter
                                         }
                                         catch (Exception ex)
                                         {
+                                                retval = false;
 
                                                 errorMailShort = "Lead Router Error Occured: Route not inserted";
                                                 errorMailLong = String.Format("Message: FROM:{0} TO:{1} SUBJECT:{2}, DATETIME:{3}\n Error:{4}",
@@ -979,8 +983,10 @@ namespace FMLeadRouter
                                             }
                                             finally
                                         {
-                                            //route again                                        
-                                            CallRouteProcessAdf2(orgMailMessage, "create");
+                                                //route again                                        
+                                                if (CallRouteProcessAdf2(orgMailMessage, "create") == false) {
+                                                    retval = false;
+                                                };
                                         }
                                     }
                                 }
@@ -1012,7 +1018,7 @@ namespace FMLeadRouter
                 
             }
             var log = LogEmail(mailMessage, route);
-            
+            return (retval);
         }
 
         private static void CheckInboxStatus()
@@ -1563,6 +1569,7 @@ namespace FMLeadRouter
         {
             try
             {
+                _client.SetMessageFlags(uid, _client.DefaultMailbox, MessageFlag.Seen);
                 _client.MoveMessage(uid, "Processed", _client.DefaultMailbox);
             }
             catch (Exception ex)
@@ -1570,7 +1577,6 @@ namespace FMLeadRouter
                 SendAlert("An error occurred", String.Format("An error occurred: {0}", ex.Message));
             }
         }
-
         private static void MoveProcessedMessages(List<uint> uids)
         {
             if (uids.Any())

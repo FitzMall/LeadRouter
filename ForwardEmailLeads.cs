@@ -815,6 +815,21 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
+                if (vendorName.Contains("Hyundai") && vendorName.Contains("Clearwater"))
+                {
+                    route.Loc = "CHY";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if (vendorName.Contains("Subaru") && vendorName.Contains("Clearwater"))
+                {
+                    route.Loc = "CSS";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+
                 if (route.Name != null)
                 {
                     string ls = String.Format("{0}", route.LeadSourceAddOn ?? route.Loc);

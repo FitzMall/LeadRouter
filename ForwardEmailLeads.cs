@@ -822,6 +822,8 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
+
+
                 if (vendorName.Contains("Subaru") && vendorName.Contains("Clearwater"))
                 {
                     route.Loc = "CSS";
@@ -829,6 +831,13 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
+                // Cars.com error fix
+                if (vendor.Id == 1 && vendorName.Contains("Wheaton"))
+                {
+                    route.Loc = "WDC";
+                    route.Mall = "WH";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
                 if (route.Name != null)
                 {

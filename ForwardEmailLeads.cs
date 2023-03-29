@@ -815,25 +815,51 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
-                if (vendorName.Contains("Hyundai") && vendorName.Contains("Clearwater"))
-                {
-                    route.Loc = "CHY";
-                    route.Mall = "CL";
-                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                }
+                // Addison re Upstart: 'Except for Florida, the lead is sent to the dealer site used to locate the vehicle, not where the vehicle resides '
 
-                if (vendorName.Contains("Mazda") && vendorName.Contains("Annapolis"))
-                {
-                    route.Loc = "FMM";
-                    route.Mall = "AW";
-                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                }
+                if (vendor.Id == 2089) { 
+                    if (vendorName.Contains("Hyundai") && vendorName.Contains("Clearwater"))
+                    {
+                        route.Loc = "CHY";
+                        route.Mall = "CL";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
 
-                if (vendorName.Contains("Subaru") && vendorName.Contains("Clearwater"))
-                {
-                    route.Loc = "CSS";
-                    route.Mall = "CL";
-                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    if (vendorName.Contains("Mazda") && vendorName.Contains("Annapolis"))
+                    {
+                        route.Loc = "FMM";
+                        route.Mall = "AW";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+                    if (vendorName.Contains("Volkswagen") && vendorName.Contains("Annapolis"))
+                    {
+                        route.Loc = "FOC";
+                        route.Mall = "AW";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+                    if (vendorName.Contains("Cadillac") && vendorName.Contains("Annapolis"))
+                    {
+                        route.Loc = "FOC";
+                        route.Mall = "AW";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+                    if (vendorName.Contains("Subaru") && vendorName.Contains("Clearwater"))
+                    {
+                        route.Loc = "CSS";
+                        route.Mall = "CL";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+                    if (vendorName.Contains("Toyota") && vendorName.Contains("Gaithersburg"))
+                    {
+                        route.Loc = "LFT";
+                        route.Mall = "GA";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
                 }
 
                 // Cars.com error fix

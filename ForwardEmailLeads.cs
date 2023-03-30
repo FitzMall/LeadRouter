@@ -600,8 +600,13 @@ namespace FMLeadRouter
             }
 
 
+            if ((make.ToLower() == "none"))
+            {
+                make = "Used";
+            }
+
             // || make.ToLower() == "subaru"
-            if ((make.ToLower() == "toyota" || make.ToLower() == "subaru" || make.ToLower() == "hyundai" || make.ToLower() == "mazda" || make.ToLower() == "nissan" || make.ToLower() == "genesis" || make.ToLower() == "volkswagen" || make.ToLower() == "cadillac") && status.ToLower() == "new")
+                if ((make.ToLower() == "toyota" || make.ToLower() == "subaru" || make.ToLower() == "hyundai" || make.ToLower() == "mazda" || make.ToLower() == "nissan" || make.ToLower() == "genesis" || make.ToLower() == "volkswagen" || make.ToLower() == "cadillac") && status.ToLower() == "new")
             {
                 // Provider Service, check to see if the source contains E Pricer, if it does, append to Provider Name...
                 var providerService = GetProviderService(mailMessage.Body, "/adf/prospect/provider/service");
@@ -901,6 +906,33 @@ namespace FMLeadRouter
                                 route.Loc = "LFT";
                                 route.Mall = "GA";
                                 route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                            }
+                        }
+
+
+                        if (vendor.Id == 5)
+                        {
+                            var providerService = GetProviderService(mailMessage.Body, "/adf/prospect/provider/service");
+                            if (!String.IsNullOrEmpty(providerService))
+                            {
+                                if (providerService.Contains("Edmunds Trade-In"))
+                                {
+                                    if (vendorName.Contains("Mazda") && vendorName.Contains("Annapolis"))
+                                    {
+                                        route.Loc = "FMM";
+                                        route.Mall = "AW";
+                                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                    }
+
+                                    if (vendorName.Contains("Volkswagen"))
+                                    {
+                                        route.Loc = "FOC";
+                                        route.Mall = "AW";
+                                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                                    }
+
+
+                                }
                             }
                         }
 

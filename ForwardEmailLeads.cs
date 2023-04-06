@@ -837,10 +837,32 @@ namespace FMLeadRouter
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
+                    if (vendorName.Contains("Mitsubishi") && vendorName.Contains("Annapolis"))
+                    {
+                        route.Loc = "FMM";
+                        route.Mall = "AW";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
                     if (vendorName.Contains("Volkswagen") && vendorName.Contains("Annapolis"))
                     {
                         route.Loc = "FOC";
                         route.Mall = "AW";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+                    if (vendorName.Contains("Chevrolet") && vendorName.Contains("Frederick"))
+                    {
+                        route.Loc = "FHG";
+                        route.Mall = "HT";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+
+                    if (vendorName.Contains("Cadillac") && vendorName.Contains("Frederick"))
+                    {
+                        route.Loc = "FHG";
+                        route.Mall = "HT";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
@@ -855,6 +877,20 @@ namespace FMLeadRouter
                     {
                         route.Loc = "CSS";
                         route.Mall = "CL";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+                    if (vendorName.Contains("Subaru") && vendorName.Contains("Rockville"))
+                    {
+                        route.Loc = "FBS";
+                        route.Mall = "WF";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+
+                    if (vendorName.Contains("Subaru") && vendorName.Contains("Gaithersburg"))
+                    {
+                        route.Loc = "FBS";
+                        route.Mall = "WF";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 

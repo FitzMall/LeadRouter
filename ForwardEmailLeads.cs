@@ -822,7 +822,6 @@ namespace FMLeadRouter
 
                 // Addison re Upstart: 'Except for Florida, the lead is sent to the dealer site used to locate the vehicle, not where the vehicle resides '
 
-                if (vendor.Id == 2089) { 
                     if (vendorName.Contains("Hyundai") && vendorName.Contains("Clearwater"))
                     {
                         route.Loc = "CHY";
@@ -900,8 +899,6 @@ namespace FMLeadRouter
                         route.Mall = "GA";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
-
-                }
 
                 // Cars.com error fix
                 if (vendor.Id == 1 && vendorName.Contains("Wheaton"))

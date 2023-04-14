@@ -805,6 +805,13 @@ namespace FMLeadRouter
 
                 string vendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
 
+                if (vendorName == "Fitzgerald Clearwater Used Cars")
+                {
+                    route.Loc = "COC";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
                 if (vendorName == "Fitzgerald Clearwater Outlet Center")
                 {
                     route.Loc = "COC";

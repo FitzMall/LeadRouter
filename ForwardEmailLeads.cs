@@ -895,8 +895,8 @@ namespace FMLeadRouter
 
                     if (vendorName.Contains("Subaru") && vendorName.Contains("Gaithersburg"))
                     {
-                        route.Loc = "FBS";
-                        route.Mall = "WF";
+                        route.Loc = "LFO";
+                        route.Mall = "GA";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 

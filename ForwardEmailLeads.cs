@@ -836,14 +836,21 @@ namespace FMLeadRouter
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
-                    if (vendorName.Contains("Mazda") && vendorName.Contains("Annapolis"))
-                    {
-                        route.Loc = "FMM";
-                        route.Mall = "AW";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Mazda") && vendorName.Contains("Annapolis"))
+                {
+                    route.Loc = "FMM";
+                    route.Mall = "AW";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
-                    if (vendorName.Contains("Mitsubishi") && vendorName.Contains("Annapolis"))
+                if (vendorName.Contains("Mazda") && vendorName.Contains("Frederick"))
+                {
+                    route.Loc = "FAM";
+                    route.Mall = "FD";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if (vendorName.Contains("Mitsubishi") && vendorName.Contains("Annapolis"))
                     {
                         route.Loc = "FMM";
                         route.Mall = "AW";

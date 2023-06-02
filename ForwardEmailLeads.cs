@@ -866,16 +866,16 @@ namespace FMLeadRouter
 
                     if (vendorName.Contains("Chevrolet") && vendorName.Contains("Frederick"))
                     {
-                        route.Loc = "FHG";
-                        route.Mall = "HT";
+                        route.Loc = "FCG";
+                        route.Mall = "FD";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
 
                     if (vendorName.Contains("Cadillac") && vendorName.Contains("Frederick"))
                     {
-                        route.Loc = "FHG";
-                        route.Mall = "HT";
+                        route.Loc = "FCG";
+                        route.Mall = "FD";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 

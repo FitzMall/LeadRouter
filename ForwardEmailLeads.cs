@@ -1059,7 +1059,7 @@ namespace FMLeadRouter
                         if (!String.IsNullOrEmpty(stockNumber) || !String.IsNullOrEmpty(make))
                         {
                             //Add Loc Code to end of subject line
-                            if (car != null && car.Loc != null)
+                            if (car != null && car.Loc != null) 
                             {
                                 //Let's create a route and send it through again, must have a vendor
                                 if (createRoute == null && vendor.Id > 0 && !String.IsNullOrEmpty(vendorCode))
@@ -1130,13 +1130,20 @@ namespace FMLeadRouter
                                     }
 
                                 }
-                                mailMessage.Subject = String.Format("Lead Router FW:{0}-{1}", mailMessage.Subject, car.Loc);
+                                if (route.Loc == null || route.Loc == "")
+                                {
+                                    mailMessage.Subject = String.Format("Lead Router FW:{0}-{1}", mailMessage.Subject, car.Loc);
+                                    RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
+                                }
                             }
                             else
                             {
-                                mailMessage.Subject = String.Format("Lead Router Car or CarLoc not found FW:{0}", mailMessage.Subject);
+                                if (route.Loc == null || route.Loc == "")
+                                {
+                                    mailMessage.Subject = String.Format("Lead Router Car or CarLoc not found FW:{0}", mailMessage.Subject);
+                                    RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
+                                }
                             }
-                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
 
                         }
                         else

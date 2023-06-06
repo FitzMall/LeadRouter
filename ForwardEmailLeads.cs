@@ -328,6 +328,7 @@ namespace FMLeadRouter
                     MoveProcessedMessages(uids[thisMsg]);
                 };
                 thisMsg += 1;
+                
             }
             //Check if Inbox has more than 5 emails unread, send email alert if true
             CheckInboxStatus();
@@ -1540,6 +1541,7 @@ namespace FMLeadRouter
                     forward.Subject = mail.Subject;
                     forward.Body = mail.Body;
                     forward.IsBodyHtml = false;
+
                     client.Send(forward);
                     Console.WriteLine("Email was sent...");
                 }

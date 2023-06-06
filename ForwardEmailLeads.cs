@@ -806,6 +806,8 @@ namespace FMLeadRouter
 
                 string vendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
 
+
+
                 if (vendorName == "Fitzgerald Clearwater Used Cars")
                 {
                     route.Loc = "COC";
@@ -867,16 +869,16 @@ namespace FMLeadRouter
 
                     if (vendorName.Contains("Chevrolet") && vendorName.Contains("Frederick"))
                     {
-                        route.Loc = "FHG";
-                        route.Mall = "HT";
+                        route.Loc = "FCG";
+                        route.Mall = "FD";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
 
                     if (vendorName.Contains("Cadillac") && vendorName.Contains("Frederick"))
                     {
-                        route.Loc = "FHG";
-                        route.Mall = "HT";
+                        route.Loc = "FCG";
+                        route.Mall = "FD";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
@@ -1133,15 +1135,15 @@ namespace FMLeadRouter
                             }
                             else
                             {
-                                mailMessage.Subject = String.Format("Lead Router FW:{0}", mailMessage.Subject);
+                                mailMessage.Subject = String.Format("Lead Router Car or CarLoc not found FW:{0}", mailMessage.Subject);
                             }
-                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
+                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
 
                         }
                         else
                         {
-                            mailMessage.Subject = String.Format("Lead Router FW2:{0}", mailMessage.Subject);
-                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
+                            mailMessage.Subject = String.Format("Lead Router Stock or Make Issue FW2:{0}", mailMessage.Subject);
+                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
                         }
 
 

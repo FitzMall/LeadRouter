@@ -896,14 +896,14 @@ namespace FMLeadRouter
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
-                    if (vendorName.Contains("Subaru") && vendorName.Contains("Rockville"))
+                    if ((vendorName.Contains("Rockville")) && (route.Make == "Subaru"))
                     {
                         route.Loc = "FBS";
                         route.Mall = "WF";
                         route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                     }
 
-                    if (vendorName.Contains("Subaru") && vendorName.Contains("Gaithersburg"))
+                if (vendorName.Contains("Subaru") && vendorName.Contains("Gaithersburg"))
                     {
                         route.Loc = "LFO";
                         route.Mall = "GA";
@@ -1026,6 +1026,12 @@ namespace FMLeadRouter
 
                         }
                         RouteEmail(mailMessage, route);
+                        if (route.LeadVendorId == 2156)
+                        {
+                            //zenzio@fitzgeraldautomall.com
+                            route.ForwardEmail = "zenzio@fitzgeraldautomall.com";
+                            RouteEmail(mailMessage, route);
+                        }
 
                         if (make.ToLower() == "hyundai" && status.ToLower() != "used")
                         {
@@ -1134,7 +1140,7 @@ namespace FMLeadRouter
                                 if (route.Loc == null || route.Loc == "")
                                 {
                                     mailMessage.Subject = String.Format("Lead Router FW:{0}-{1}", mailMessage.Subject, car.Loc);
-                                    RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
+                                    RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
                                 }
                             }
                             else
@@ -1142,7 +1148,7 @@ namespace FMLeadRouter
                                 if (route.Loc == null || route.Loc == "")
                                 {
                                     mailMessage.Subject = String.Format("Lead Router Car or CarLoc not found FW:{0}", mailMessage.Subject);
-                                    RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
+                                    RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
                                 }
                             }
 
@@ -1150,7 +1156,7 @@ namespace FMLeadRouter
                         else
                         {
                             mailMessage.Subject = String.Format("Lead Router Stock or Make Issue FW2:{0}", mailMessage.Subject);
-                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com, burroughsd@fitzmall.com");
+                            RouteEmail(mailMessage, "statlerc@fitzmall.com, morrisonk@fitzmall.com");
                         }
 
 

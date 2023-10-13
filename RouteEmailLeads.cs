@@ -150,7 +150,7 @@ namespace FMLeadRouter
                 var vendorGuru = SqlMapperUtil.SqlWithParams<LeadVendor>(sqlGuru, new { email }).FirstOrDefault();
                 return vendorGuru;
             }
-            if (email.Contains("@leads.truecarmail.com"))
+            if (email.Contains(".truecarmail.com"))
             {
                 string sqlGuru = @"SELECT * FROM [VinSolution].[dbo].[LeadVendor] WHERE [Email] = '@leads.truecarmail.com'";
                 var vendorGuru = SqlMapperUtil.SqlWithParams<LeadVendor>(sqlGuru, new { email }).FirstOrDefault();

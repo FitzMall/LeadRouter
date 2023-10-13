@@ -1026,6 +1026,12 @@ namespace FMLeadRouter
 
                         }
                         RouteEmail(mailMessage, route);
+                        if (route.LeadVendorId == 2156)
+                        {
+                            //zenzio@fitzgeraldautomall.com
+                            route.ForwardEmail = "zenzio@fitzgeraldautomall.com";
+                            RouteEmail(mailMessage, route);
+                        }
 
                         if (make.ToLower() == "hyundai" && status.ToLower() != "used")
                         {

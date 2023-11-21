@@ -925,6 +925,12 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
+                if (vendor.Id == 2156)
+                {
+                    //zenzio@fitzgeraldautomall.com
+                    RouteEmail(mailMessage, "zenzio@fitzgeraldautomall.com");
+                }
+
                 if (route.Name != null)
                 {
                     string ls = String.Format("{0}", route.LeadSourceAddOn ?? route.Loc);
@@ -1014,7 +1020,7 @@ namespace FMLeadRouter
                                     else
                                     {
                                         // LFT and LFM are the troublesome ones- must go where car is!
-                                        if (route.Loc == "LFT" | route.Loc == "LFM")
+                                        if (route.Loc == "LFT" | route.Loc == "LFM" | route.Loc == "COC" | route.Loc == "CJE" | route.Loc == "CHY")
                                         {
                                             route.Loc = car2.Loc;
                                             route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
@@ -1026,12 +1032,7 @@ namespace FMLeadRouter
 
                         }
                         RouteEmail(mailMessage, route);
-                        if (route.LeadVendorId == 2156)
-                        {
-                            //zenzio@fitzgeraldautomall.com
-                            route.ForwardEmail = "zenzio@fitzgeraldautomall.com";
-                            RouteEmail(mailMessage, route);
-                        }
+  
 
                         if (make.ToLower() == "hyundai" && status.ToLower() != "used")
                         {
@@ -1063,7 +1064,7 @@ namespace FMLeadRouter
                     if (GetIgnoredEmailList().All(s => s.ToLower() != mailMessage.To.ToString().ToLower()))
                     {
                         //If no route but ADF checks out then forward to IDD
-                        if (!String.IsNullOrEmpty(stockNumber) || !String.IsNullOrEmpty(make))
+                        if (!String.IsNullOrEmpty(stockNumber) || !String.IsNullOrEmpty(make)) 
                         {
                             //Add Loc Code to end of subject line
                             if (car != null && car.Loc != null) 

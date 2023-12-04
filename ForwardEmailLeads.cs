@@ -328,7 +328,7 @@ namespace FMLeadRouter
                     MoveProcessedMessages(uids[thisMsg]);
                 };
                 thisMsg += 1;
-                
+
             }
             //Check if Inbox has more than 5 emails unread, send email alert if true
             CheckInboxStatus();
@@ -607,7 +607,7 @@ namespace FMLeadRouter
             }
 
             // || make.ToLower() == "subaru"
-                if ((make.ToLower() == "toyota" || make.ToLower() == "subaru" || make.ToLower() == "hyundai" || make.ToLower() == "mazda" || make.ToLower() == "nissan" || make.ToLower() == "genesis" || make.ToLower() == "volkswagen" || make.ToLower() == "cadillac") && status.ToLower() == "new")
+            if ((make.ToLower() == "toyota" || make.ToLower() == "subaru" || make.ToLower() == "hyundai" || make.ToLower() == "mazda" || make.ToLower() == "nissan" || make.ToLower() == "genesis" || make.ToLower() == "volkswagen" || make.ToLower() == "cadillac") && status.ToLower() == "new")
             {
                 // Provider Service, check to see if the source contains E Pricer, if it does, append to Provider Name...
                 var providerService = GetProviderService(mailMessage.Body, "/adf/prospect/provider/service");
@@ -805,8 +805,10 @@ namespace FMLeadRouter
                 }
 
                 string vendorName = GetVendorCode(mailMessage.Body, "/adf/prospect/vendor/vendorname");
-
-
+                if (vendor.Id == 2156)
+                {
+                    vendorName = mailMessage.Body; // use the whole body 
+                }
 
                 if (vendorName == "Fitzgerald Clearwater Used Cars")
                 {
@@ -832,12 +834,12 @@ namespace FMLeadRouter
 
                 // Addison re Upstart: 'Except for Florida, the lead is sent to the dealer site used to locate the vehicle, not where the vehicle resides '
 
-                    if (vendorName.Contains("Hyundai") && vendorName.Contains("Clearwater"))
-                    {
-                        route.Loc = "CHY";
-                        route.Mall = "CL";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Hyundai") && vendorName.Contains("Clearwater"))
+                {
+                    route.Loc = "CHY";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
                 if (vendorName.Contains("Mazda") && vendorName.Contains("Annapolis"))
                 {
@@ -854,68 +856,104 @@ namespace FMLeadRouter
                 }
 
                 if (vendorName.Contains("Mitsubishi") && vendorName.Contains("Annapolis"))
-                    {
-                        route.Loc = "FMM";
-                        route.Mall = "AW";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                {
+                    route.Loc = "FMM";
+                    route.Mall = "AW";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
-                    if (vendorName.Contains("Volkswagen") && vendorName.Contains("Annapolis"))
-                    {
-                        route.Loc = "FOC";
-                        route.Mall = "AW";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Volkswagen") && vendorName.Contains("Annapolis"))
+                {
+                    route.Loc = "FOC";
+                    route.Mall = "AW";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
-                    if (vendorName.Contains("Chevrolet") && vendorName.Contains("Frederick"))
-                    {
-                        route.Loc = "FCG";
-                        route.Mall = "FD";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Chevrolet") && vendorName.Contains("Frederick"))
+                {
+                    route.Loc = "FCG";
+                    route.Mall = "FD";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
 
-                    if (vendorName.Contains("Cadillac") && vendorName.Contains("Frederick"))
-                    {
-                        route.Loc = "FCG";
-                        route.Mall = "FD";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Cadillac") && vendorName.Contains("Frederick"))
+                {
+                    route.Loc = "FCG";
+                    route.Mall = "FD";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
-                    if (vendorName.Contains("Cadillac") && vendorName.Contains("Annapolis"))
-                    {
-                        route.Loc = "FOC";
-                        route.Mall = "AW";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Cadillac") && vendorName.Contains("Annapolis"))
+                {
+                    route.Loc = "FOC";
+                    route.Mall = "AW";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
-                    if (vendorName.Contains("Subaru") && vendorName.Contains("Clearwater"))
-                    {
-                        route.Loc = "CSS";
-                        route.Mall = "CL";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Subaru") && vendorName.Contains("Clearwater"))
+                {
+                    route.Loc = "CSS";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
-                    if ((vendorName.Contains("Rockville")) && (route.Make == "Subaru"))
-                    {
-                        route.Loc = "FBS";
-                        route.Mall = "WF";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if ((vendorName.Contains("Rockville")) && (route.Make == "Subaru"))
+                {
+                    route.Loc = "FBS";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if ((vendorName.Contains("Rockville")) && vendorName.Contains("Subaru"))
+                {
+                    route.Loc = "FBS";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+
+                if ((vendorName.Contains("Rockville")) && (route.Make == "Hyundai"))
+                {
+                    route.Loc = "FBS";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if ((vendorName.Contains("Rockville")) && vendorName.Contains("Hyundai"))
+                {
+                    route.Loc = "FBS";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
                 if (vendorName.Contains("Subaru") && vendorName.Contains("Gaithersburg"))
-                    {
-                        route.Loc = "LFO";
-                        route.Mall = "GA";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                {
+                    route.Loc = "LFO";
+                    route.Mall = "GA";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
-                    if (vendorName.Contains("Toyota") && vendorName.Contains("Gaithersburg"))
-                    {
-                        route.Loc = "LFT";
-                        route.Mall = "GA";
-                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
-                    }
+                if (vendorName.Contains("Toyota") && vendorName.Contains("Gaithersburg"))
+                {
+                    route.Loc = "LFT";
+                    route.Mall = "GA";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if (vendorName.Contains("Genesis") && vendorName.Contains("Gaithersburg"))
+                {
+                    route.Loc = "CDO";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if (vendorName.Contains("Hyundai") && vendorName.Contains("Gaithersburg"))
+                {
+                    route.Loc = "CDO";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
 
                 // Cars.com error fix
                 if (vendor.Id == 1 && vendorName.Contains("Wheaton"))
@@ -927,9 +965,23 @@ namespace FMLeadRouter
 
                 if (vendor.Id == 2156)
                 {
-                    //zenzio@fitzgeraldautomall.com
+
+
+                    if (route.Name == null)
+                    {
+                        // zenzio leads are pretty low on info- sometimes loc is the only way
+
+                        leadRoute = _routeEmail.GetLeadRouteByLoc(vendor.Id, route.Loc);
+
+                        foreach (var rt in leadRoute)
+                        {
+                            route = rt;
+                            break;
+                        }
+                    }
                     RouteEmail(mailMessage, "zenzio@fitzgeraldautomall.com");
                 }
+
 
                 if (route.Name != null)
                 {
@@ -1032,7 +1084,7 @@ namespace FMLeadRouter
 
                         }
                         RouteEmail(mailMessage, route);
-  
+
 
                         if (make.ToLower() == "hyundai" && status.ToLower() != "used")
                         {
@@ -1064,10 +1116,10 @@ namespace FMLeadRouter
                     if (GetIgnoredEmailList().All(s => s.ToLower() != mailMessage.To.ToString().ToLower()))
                     {
                         //If no route but ADF checks out then forward to IDD
-                        if (!String.IsNullOrEmpty(stockNumber) || !String.IsNullOrEmpty(make)) 
+                        if (!String.IsNullOrEmpty(stockNumber) || !String.IsNullOrEmpty(make))
                         {
                             //Add Loc Code to end of subject line
-                            if (car != null && car.Loc != null) 
+                            if (car != null && car.Loc != null)
                             {
                                 //Let's create a route and send it through again, must have a vendor
                                 if (createRoute == null && vendor.Id > 0 && !String.IsNullOrEmpty(vendorCode))
@@ -1565,6 +1617,29 @@ namespace FMLeadRouter
                 }
             }
         }
+
+        public static void DABEmail(string txtforbody)
+        {
+            Console.WriteLine("Forwarding Email...");
+            using (var client = new SmtpClient())
+            {
+                var forward = new MailMessage();
+
+
+                forward.From = new MailAddress("leads@fitzmall.com");
+                forward.To.Add("burroughsd@fitzmall.com");
+
+                forward.Subject = "leadrouter data";
+                forward.Body = txtforbody;
+                forward.IsBodyHtml = false;
+
+                client.Send(forward);
+                Console.WriteLine("Email was sent...");
+            }
+        }
+
+
+
 
         public static void SendResponderEmail(MailMessage mail, string location, string customerEmail, string make)
         {

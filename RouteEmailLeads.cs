@@ -193,12 +193,19 @@ namespace FMLeadRouter
             return vendor;
         }
 
-      
+
         public List<LeadRoute> GetLeadRouteStk(int id, string vendorCode, string locCode, string mall)
         {
             Console.WriteLine("Get Lead With Stk");
             string sql = @"SELECT * FROM [VinSolution].[dbo].[LeadRoute] WHERE IsActive = 1 AND [LeadVendorId] = @id AND [VendorCode] = @vendorCode AND [Loc] = @locCode AND [Mall] = @mall ORDER BY [XmlRule] desc";
             var route = SqlMapperUtil.SqlWithParams<LeadRoute>(sql, new { id, vendorCode, locCode, mall });
+            return route;
+        }
+        public List<LeadRoute> GetLeadRouteByLoc(int id, string locCode)
+        {
+            Console.WriteLine("Get Lead With Stk");
+            string sql = @"SELECT * FROM [VinSolution].[dbo].[LeadRoute] WHERE IsActive = 1 AND [LeadVendorId] = @id AND [Loc] = @locCode ORDER BY [XmlRule] desc";
+            var route = SqlMapperUtil.SqlWithParams<LeadRoute>(sql, new { id, locCode });
             return route;
         }
 

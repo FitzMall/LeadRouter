@@ -927,6 +927,20 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
+                if ((vendorName.Contains("Rockville")) && (route.Make == "Genesis"))
+                {
+                    route.Loc = "CDO";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                if ((vendorName.Contains("Rockville")) && vendorName.Contains("Genesis"))
+                {
+                    route.Loc = "CDO";
+                    route.Mall = "WF";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
                 if (vendorName.Contains("Subaru") && vendorName.Contains("Gaithersburg"))
                 {
                     route.Loc = "LFO";

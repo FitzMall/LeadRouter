@@ -957,14 +957,14 @@ namespace FMLeadRouter
 
                 if (vendorName.Contains("Genesis") && vendorName.Contains("Gaithersburg"))
                 {
-                    route.Loc = "CDO";
+                    route.Loc = "LFO";
                     route.Mall = "WF";
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
                 if (vendorName.Contains("Hyundai") && vendorName.Contains("Gaithersburg"))
                 {
-                    route.Loc = "CDO";
+                    route.Loc = "LFO";
                     route.Mall = "WF";
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }

@@ -915,14 +915,14 @@ namespace FMLeadRouter
 
                 if ((vendorName.Contains("Rockville")) && (route.Make == "Hyundai"))
                 {
-                    route.Loc = "FBS";
+                    route.Loc = "CDO";
                     route.Mall = "WF";
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
                 if ((vendorName.Contains("Rockville")) && vendorName.Contains("Hyundai"))
                 {
-                    route.Loc = "FBS";
+                    route.Loc = "CDO";
                     route.Mall = "WF";
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }

@@ -817,7 +817,7 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
-                if (vendorName == "Fitzgerald Clearwater Outlet Center")
+                if (vendorName.Contains("Clearwater Outlet Center"))
                 {
                     route.Loc = "COC";
                     route.Mall = "CL";
@@ -825,7 +825,7 @@ namespace FMLeadRouter
                 }
 
 
-                if (vendorName == "Fitzgerald Auto Mall Clearwater Used Car Outlet")
+                if (vendorName.Contains("Used") && vendorName.Contains("Clearwater"))
                 {
                     route.Loc = "COC";
                     route.Mall = "CL";
@@ -864,7 +864,7 @@ namespace FMLeadRouter
 
                 if (vendorName.Contains("Volkswagen") && vendorName.Contains("Annapolis"))
                 {
-                    route.Loc = "FOC";
+                    route.Loc = "FMM";
                     route.Mall = "AW";
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
@@ -979,8 +979,6 @@ namespace FMLeadRouter
 
                 if (vendor.Id == 2156)
                 {
-
-
                     if (route.Name == null)
                     {
                         // zenzio leads are pretty low on info- sometimes loc is the only way
@@ -992,7 +990,7 @@ namespace FMLeadRouter
                             route = rt;
                             break;
                         }
-                    }
+                      }
                     RouteEmail(mailMessage, "zenzio@fitzgeraldautomall.com");
                 }
 

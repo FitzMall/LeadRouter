@@ -962,6 +962,13 @@ namespace FMLeadRouter
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
                 }
 
+                if (vendorName.Contains("Genesis") && vendorName.Contains("Clearwater"))
+                {
+                    route.Loc = "CSS";
+                    route.Mall = "CL";
+                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
                 if (vendorName.Contains("Hyundai") && vendorName.Contains("Gaithersburg"))
                 {
                     route.Loc = "LFO";

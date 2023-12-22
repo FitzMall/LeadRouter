@@ -850,9 +850,18 @@ namespace FMLeadRouter
 
                 if (vendorName.Contains("Mazda") && vendorName.Contains("Frederick"))
                 {
-                    route.Loc = "FAM";
-                    route.Mall = "FD";
-                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    if (status.ToLower() != "used")
+                    {
+                        route.Loc = "FCG";
+                        route.Mall = "FD";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+                    else
+                    {
+                        route.Loc = "FAM";
+                        route.Mall = "FD";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
                 }
 
                 if (vendorName.Contains("Mitsubishi") && vendorName.Contains("Annapolis"))
@@ -871,17 +880,35 @@ namespace FMLeadRouter
 
                 if (vendorName.Contains("Chevrolet") && vendorName.Contains("Frederick"))
                 {
-                    route.Loc = "FCG";
-                    route.Mall = "FD";
-                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    if (status.ToLower() != "used")
+                    {
+                        route.Loc = "FCG";
+                        route.Mall = "FD";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+                    else
+                    {
+                        route.Loc = "FSS";
+                        route.Mall = "FS";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
                 }
 
 
                 if (vendorName.Contains("Cadillac") && vendorName.Contains("Frederick"))
                 {
-                    route.Loc = "FCG";
-                    route.Mall = "FD";
-                    route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    if (status.ToLower() != "used")
+                    {
+                        route.Loc = "FCG";
+                        route.Mall = "FD";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
+                    else
+                    {
+                        route.Loc = "FSS";
+                        route.Mall = "FS";
+                        route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                    }
                 }
 
                 if (vendorName.Contains("Cadillac") && vendorName.Contains("Annapolis"))
@@ -997,7 +1024,7 @@ namespace FMLeadRouter
                             route = rt;
                             break;
                         }
-                      }
+                    }
                     RouteEmail(mailMessage, "zenzio@fitzgeraldautomall.com");
                 }
 

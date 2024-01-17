@@ -810,6 +810,10 @@ namespace FMLeadRouter
                     vendorName = mailMessage.Body; // use the whole body 
                 }
 
+                string saveLoc = route.Loc;
+                string saveMall = route.Mall;
+                string saveEmail = route.ForwardEmail;
+
                 if (vendorName == "Fitzgerald Clearwater Used Cars")
                 {
                     route.Loc = "COC";
@@ -1001,6 +1005,31 @@ namespace FMLeadRouter
                     route.Loc = "LFO";
                     route.Mall = "WF";
                     route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                }
+
+                // CarNow (Mazda) fix
+                if (vendor.Id == 1077)
+                {
+                    route.Loc = saveLoc;
+                    route.Mall = saveMall;
+                    route.ForwardEmail = saveEmail;
+
+                    if (route.Loc != "FMM" & route.Loc != "FCG"){
+                        if (vendorName.Contains("Frederick"))
+                        {
+                            route.Loc = "FCG";
+                            route.Mall = "FD";
+                            route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+
+                        }
+                        else
+                        {
+                            route.Loc = "FMM";
+                            route.Mall = "AW";
+                            route.ForwardEmail = _routeEmail.GetLeadCrmEmail(route.Loc).Email;
+                        }
+
+                    }
                 }
 
                 // Cars.com error fix
